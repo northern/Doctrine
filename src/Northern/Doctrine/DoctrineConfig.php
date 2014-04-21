@@ -32,11 +32,11 @@ class DoctrineConfig {
 			$this->config = Arr::merge( $this->config, $configurations[ $environment ] );
 		}
 		
-		$entityPaths      = Arr::get( $config, 'entityPaths' );
-		$proxiesPath      = Arr::get( $config, 'proxies.path' );
-		$proxiesNamespace = Arr::get( $config, 'proxies.namespace' );
-		$database         = Arr::get( $config, 'database' );
-		$isDevMode        = Arr::get( $config, 'isDevMode', TRUE );
+		$entityPaths      = Arr::get( $this->config, 'entityPaths' );
+		$proxiesPath      = Arr::get( $this->config, 'proxies.path' );
+		$proxiesNamespace = Arr::get( $this->config, 'proxies.namespace' );
+		$database         = Arr::get( $this->config, 'database' );
+		$isDevMode        = Arr::get( $this->config, 'isDevMode', TRUE );
 		
 		$this->cache = new \Doctrine\Common\Cache\ArrayCache();
 		
