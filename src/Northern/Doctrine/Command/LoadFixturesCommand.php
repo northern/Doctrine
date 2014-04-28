@@ -23,12 +23,11 @@ class LoadFixturesCommand extends Command {
 					new InputArgument('directory', InputArgument::REQUIRED, 'The directory where the fixtures are located.'),
 				)
 			)
-			/*->setHelp( <<<EOT
-The <info>%command.name%</info> shows basic information about which
-entities exist and possibly if their mapping information contains errors or
-not.
+			->setHelp( <<<EOT
+The <info>directory</info> specifies the directory where the fixtures are kept. The fixtures are defined as a set of files.
+More information can be found here: <comment>https://github.com/doctrine/data-fixtures</comment>
 EOT
-			)*/
+			)
 		;
 	}
 
