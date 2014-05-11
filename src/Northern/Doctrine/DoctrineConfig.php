@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
+use Symfony\Component\Yaml\Parser;
+
 use Northern\Common\Helper\ArrayHelper as Arr;
 
 class DoctrineConfig {
@@ -23,20 +25,32 @@ class DoctrineConfig {
 		return $this->entityManager;
 	}
 	
-	public function __construct( array $configurations, $environment = 'dev' )
+	public function __construct( $configDir, $environment = 'dev' )
 	{
-		$this->config = Arr::get( $configurations, 'default', array() );
-		
-		if( isset( $configurations[ $environment ] ) )
+		$yaml = new Parser();
+
+		$configDir = realpath( $configDir );
+
+		if( ! @file_exists("{$configDir}/config.yml") )
 		{
-			$this->config = Arr::merge( $this->config, $configurations[ $environment ] );
+			throw new \Exception("File: {$configDir}/config.yml does not exist.");
 		}
+
+		if( ! @file_exists("{$configDir}/config_{$environment}.yml") )
+		{
+			throw new \Exception("File: {$configDir}/config_{$environment}.yml does not exist.");
+		}
+
+		$config    = $yaml->parse( file_get_contents("{$configDir}/config.yml") );
+		$configEnv = $yaml->parse( file_get_contents("{$configDir}/config_{$environment}.yml") );
+
+		$this->config = Arr::merge( $config, $configEnv );
 		
-		$entityPaths      = Arr::get( $this->config, 'entityPaths' );
-		$proxiesPath      = Arr::get( $this->config, 'proxies.path' );
-		$proxiesNamespace = Arr::get( $this->config, 'proxies.namespace' );
-		$database         = Arr::get( $this->config, 'database' );
-		$isDevMode        = Arr::get( $this->config, 'isDevMode', TRUE );
+		$entityPaths      = Arr::get( $this->config, 'doctrine.entityPaths' );
+		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxies.path' );
+		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxies.namespace' );
+		$database         = Arr::get( $this->config, 'doctrine.database' );
+		$isDevMode        = Arr::get( $this->config, 'doctrine.isDevMode', TRUE );
 		
 		$this->cache = new \Doctrine\Common\Cache\ArrayCache();
 		
