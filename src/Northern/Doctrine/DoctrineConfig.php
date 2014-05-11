@@ -29,8 +29,6 @@ class DoctrineConfig {
 	{
 		$yaml = new Parser();
 
-		$configDir = realpath( $configDir );
-
 		if( ! @file_exists("{$configDir}/config.yml") )
 		{
 			throw new \Exception("File: {$configDir}/config.yml does not exist.");
