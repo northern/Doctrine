@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
-use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml;
 
 use Northern\Common\Helper\ArrayHelper as Arr;
 
@@ -27,8 +27,6 @@ class DoctrineConfig {
 	
 	public function __construct( $configDir, $environment = 'dev' )
 	{
-		$yaml = new Parser();
-
 		$configDir = realpath( $configDir );
 
 		if( ! @file_exists("{$configDir}/config.yml") )
@@ -41,15 +39,22 @@ class DoctrineConfig {
 			throw new \Exception("File: {$configDir}/config_{$environment}.yml does not exist.");
 		}
 
-		$config    = $yaml->parse( file_get_contents("{$configDir}/config.yml") );
-		$configEnv = $yaml->parse( file_get_contents("{$configDir}/config_{$environment}.yml") );
+		try
+		{
+			$config    = Yaml\Yaml::parse("{$configDir}/config.yml");
+			$configEnv = Yaml\Yaml::parse("{$configDir}/config_{$environment}.yml");
+		}
+		catch( Yaml\Exception\ParseException $e )
+		{
+			throw new \Exception( $e->getMessage() );
+		}
 
 		$this->config = Arr::merge( $config, $configEnv );
-		
-		$entityPaths      = Arr::get( $this->config, 'doctrine.entityPaths' );
-		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxies.path' );
-		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxies.namespace' );
-		$database         = Arr::get( $this->config, 'doctrine.database' );
+
+		$entityPaths      = Arr::get( $this->config, 'doctrine.entityPaths', array() );
+		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxies.path', '' );
+		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxies.namespace', '' );
+		$database         = Arr::get( $this->config, 'doctrine.database', array() );
 		$isDevMode        = Arr::get( $this->config, 'doctrine.isDevMode', TRUE );
 		
 		$this->cache = new \Doctrine\Common\Cache\ArrayCache();

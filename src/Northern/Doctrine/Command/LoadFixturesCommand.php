@@ -47,7 +47,6 @@ EOT
 		$executor = new ORMExecutor( $entityManager, $purger );
 		
 		$executor->execute( $loader->getFixtures() );
-		
 	}
 	
 }
