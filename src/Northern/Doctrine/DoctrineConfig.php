@@ -49,9 +49,9 @@ class DoctrineConfig {
 
 		$this->config = Arr::merge( $config, $configEnv );
 
-		$entityPaths      = Arr::get( $this->config, 'doctrine.entityPaths', array() );
-		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxies.path', '' );
-		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxies.namespace', '' );
+		$entityPaths      = Arr::get( $this->config, 'doctrine.entity.paths', array() );
+		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxy.path', '' );
+		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxy.namespace', '' );
 		$database         = Arr::get( $this->config, 'doctrine.database', array() );
 		$isDevMode        = Arr::get( $this->config, 'doctrine.isDevMode', TRUE );
 		
