@@ -6,7 +6,7 @@ Northern Doctrine is a small library that makes it easy to add Doctrine configur
 
 Simply add it to your Composer.json:
 
-    "northern/doctrine": "dev-dev-master"
+    "northern/doctrine": "1.0.0"
 
 ## DoctrineConfig
 
