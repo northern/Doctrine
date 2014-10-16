@@ -7,6 +7,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 
+use Symfony\Component\Yaml;
+
 use Northern\Common\Helper\ArrayHelper as Arr;
 
 class DoctrineConfig {
@@ -23,20 +25,35 @@ class DoctrineConfig {
 		return $this->entityManager;
 	}
 	
-	public function __construct( array $configurations, $environment = 'dev' )
+	public function __construct( $configDir, $environment = 'dev' )
 	{
-		$this->config = Arr::get( $configurations, 'default', array() );
-		
-		if( isset( $configurations[ $environment ] ) )
+		if( ! @file_exists("{$configDir}/config.yml") )
 		{
-			$this->config = Arr::merge( $this->config, $configurations[ $environment ] );
+			throw new \Exception("File: {$configDir}/config.yml does not exist.");
 		}
-		
-		$entityPaths      = Arr::get( $config, 'entityPaths' );
-		$proxiesPath      = Arr::get( $config, 'proxies.path' );
-		$proxiesNamespace = Arr::get( $config, 'proxies.namespace' );
-		$database         = Arr::get( $config, 'database' );
-		$isDevMode        = Arr::get( $config, 'isDevMode', TRUE );
+
+		if( ! @file_exists("{$configDir}/config_{$environment}.yml") )
+		{
+			throw new \Exception("File: {$configDir}/config_{$environment}.yml does not exist.");
+		}
+
+		try
+		{
+			$config    = Yaml\Yaml::parse("{$configDir}/config.yml");
+			$configEnv = Yaml\Yaml::parse("{$configDir}/config_{$environment}.yml");
+		}
+		catch( Yaml\Exception\ParseException $e )
+		{
+			throw new \Exception( $e->getMessage() );
+		}
+
+		$this->config = Arr::merge( $config, $configEnv );
+
+		$entityPaths      = Arr::get( $this->config, 'doctrine.entity.paths', array() );
+		$proxiesPath      = Arr::get( $this->config, 'doctrine.proxy.path', '' );
+		$proxiesNamespace = Arr::get( $this->config, 'doctrine.proxy.namespace', '' );
+		$database         = Arr::get( $this->config, 'doctrine.database', array() );
+		$isDevMode        = Arr::get( $this->config, 'doctrine.isDevMode', TRUE );
 		
 		$this->cache = new \Doctrine\Common\Cache\ArrayCache();
 		
